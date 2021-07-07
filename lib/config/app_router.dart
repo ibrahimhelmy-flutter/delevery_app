@@ -1,3 +1,4 @@
+import 'package:delevery_app/models/models.dart';
 import 'package:delevery_app/screens/location/locatin_screen.dart';
 import 'package:delevery_app/screens/screnns.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,7 +14,7 @@ class AppRouter {
         return MyHomePage.route();
       case LocationScreen.routeName:
         return LocationScreen.route();
-      case BasketScreen.routeName:
+      case BasketScreen.routeName :
         return BasketScreen.route();
 
       case CheckOutScreeen.routeName:
@@ -26,7 +27,9 @@ class AppRouter {
         return FilterScreen.route();
 
       case ResturantDetailsScreen.routeName:
-        return ResturantDetailsScreen.route();
+        return ResturantDetailsScreen.route(resturant:
+        settings.arguments as  Resturant
+        );
 
       case ResturantListingScreen.routeName:
         return ResturantListingScreen.route();

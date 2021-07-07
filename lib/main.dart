@@ -1,5 +1,3 @@
-
-
 import 'package:delevery_app/blocs/geolocation/geolocation_bloc.dart';
 import 'package:delevery_app/blocs/placeAutoComplete/placeautocomplete_bloc.dart';
 
@@ -13,9 +11,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'config/them.dart';
 
-void main()async {
-     WidgetsFlutterBinding.ensureInitialized();
- await Firebase.initializeApp();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -26,8 +24,7 @@ class MyApp extends StatelessWidget {
         providers: [
           RepositoryProvider<GelocationRepository>(
               create: (_) => GelocationRepository()),
-          RepositoryProvider<PlaceRepository>(
-            create: (_) => PlaceRepository()),
+          RepositoryProvider<PlaceRepository>(create: (_) => PlaceRepository()),
         ],
         child: MultiBlocProvider(
           providers: [
@@ -43,6 +40,7 @@ class MyApp extends StatelessWidget {
             ),
           ],
           child: MaterialApp(
+            debugShowCheckedModeBanner: false,
             theme: theme(),
             onGenerateRoute: AppRouter.onGenerateRoute,
             initialRoute: MyHomePage.routeName,

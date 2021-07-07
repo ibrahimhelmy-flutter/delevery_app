@@ -2,7 +2,12 @@ import 'dart:async';
 
 import 'package:delevery_app/blocs/geolocation/geolocation_bloc.dart';
 import 'package:delevery_app/blocs/placeAutoComplete/placeautocomplete_bloc.dart';
+import 'package:delevery_app/models/category_model.dart';
 import 'package:delevery_app/models/place_autoComplete.dart';
+import 'package:delevery_app/models/promo_model.dart';
+import 'package:delevery_app/models/resturant_model.dart';
+import 'package:delevery_app/screens/location/locatin_screen.dart';
+import 'package:delevery_app/screens/redturant_detailes/resturant_details._screen.dart';
 import 'package:delevery_app/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,95 +21,106 @@ class MyHomePage extends StatelessWidget {
         builder: (_) => MyHomePage(), settings: RouteSettings(name: routeName));
   }
 
-  Completer<GoogleMapController> _controller = Completer();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            height: MediaQuery.of(context).size.height,
-            width: double.infinity,
-            child: BlocBuilder<GeolocationBloc, GeolocationState>(
-              builder: (context, state) {
-                if (state is GeolocationLoading) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (state is GeolocationLoaded) {
-                  return Gmap(
-                      lat: state.position.latitude,
-                      lng: state.position.longitude);
-                }
-                return Text("ther is Some Thing Wrong");
-              },
+      backgroundColor: Theme.of(context).backgroundColor,
+      appBar: CustomAppBar(),
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                height: 100,
+                child: ListView.builder(
+                    itemCount: Category.categories.length,
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    itemBuilder: (ctx, index) {
+                      return CategoryBox(category: Category.categories[index]);
+                    }),
+              ),
             ),
-          ),
-          Positioned(
-              top: 40,
-              left: 20,
-              right: 20,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SvgPicture.asset(
-                    "assets/logo.svg",
-                    height: 50,
-                    alignment: Alignment.topCenter,
-                  ),
-                  BlocBuilder<PlaceautocompleteBloc, PlaceautocompleteState>(
-                    builder: (context, state) {
-                      if (state is PlaceautocompleteLoading) {
-                        return Center(child: CircularProgressIndicator());
-                      } else if (state is PlaceautocompleteLoaded) {
-                        print(state.autocomplete);
-                        return Expanded(
-                          child: Column(
-                            children: [
-                              LocationSearchBox(),
-                              Container(
-                                height: 300,
-                                color: state.autocomplete.length > 0
-                                    ? Colors.black.withOpacity(0.6)
-                                    : Colors.transparent,
-                                margin: EdgeInsets.all(8),
-                                child: ListView.builder(
-                                    itemCount: state.autocomplete.length,
-                                    itemBuilder: (context, index) {
-                                      return ListTile(
-                                        title: Text(state
-                                            .autocomplete[index].description),
-                                      );
-                                    }),
-                              )
-                            ],
-                          ),
-                        );
-                      }
-                      return Text("wrong");
-                    },
-                  ),
-                ],
-              )),
-          Positioned(
-              bottom: 40,
-              left: 30,
-              right: 50,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 70),
-                child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        primary: Theme.of(context).primaryColor),
-                    onPressed: () {},
-                    child: Text(
-                      "Save",
-                      style: Theme.of(context)
-                          .textTheme
-                          .headline3!
-                          .copyWith(color: Colors.white),
-                    )),
-              ))
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SizedBox(
+                height: 125,
+                child: ListView.builder(
+                    itemCount: Promo.proms.length,
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    itemBuilder: (ctx, index) {
+                      return PromBox(
+                        promo: Promo.proms[index],
+                      );
+                    }),
+              ),
+            ),
+            FoodSearchBuildr(),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: Text(
+                  "Top Rated",
+                  style: Theme.of(context).textTheme.headline4,
+                ),
+              ),
+            ),
+            ListView.builder(
+                shrinkWrap: true,
+                itemCount: Resturant.resturants.length,
+                physics: ClampingScrollPhysics(),
+                itemBuilder: (ctx, index) {
+                  return ResturantCard(resturant: Resturant.resturants[index]);
+                })
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
+  const CustomAppBar({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      leading: IconButton(
+        onPressed: () {},
+        icon: Icon(Icons.person),
+      ),
+      actions: [
+        IconButton(
+            onPressed: () {
+              Navigator.pushNamed(context, LocationScreen.routeName);
+            },
+            icon: Icon(Icons.maps_ugc_outlined))
+      ],
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("CURRENT LOCATION",
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyText1!
+                  .copyWith(color: Colors.white)),
+          Text("Cairo,1 st Way",
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6!
+                  .copyWith(color: Colors.white)),
         ],
       ),
     );
   }
+
+  @override
+  // TODO: implement preferredSize
+  Size get preferredSize => Size.fromHeight(56.0);
 }
